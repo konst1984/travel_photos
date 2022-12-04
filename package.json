@@ -15,7 +15,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "deploy": "nom run build && npm run build-gh-paged",
+    "deploy": "npm run build && npm run build-gh-paged",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./index.scss";
 import Collection from "./components/Collection/Collection";
+import NotFoundSearch from "./components/NotFoundSearch/NotFoundSearch";
 
 interface IItem {
   category: number;
@@ -25,7 +26,9 @@ function App() {
   useEffect(() => {
     setIsLoading(true);
     fetch("./data.json")
-      .then((data) => data.json())
+      .then((data) => {
+        return data.json();
+      })
       .then((res) => {
         if (categoryId) {
           const resCategory = res.collections.filter(
@@ -45,6 +48,10 @@ function App() {
   const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
+
+  const searchFilterCollection = collections.filter((item: { name: string }) =>
+    item.name.toLowerCase().includes(searchValue.toLowerCase())
+  );
 
   return (
     <div className="App">
@@ -73,28 +80,27 @@ function App() {
       </div>
       <div className="content">
         {!isLoading
-          ? collections
+          ? searchFilterCollection
               .slice(firstIndex, lastIndex)
-              .filter((item: { name: string }) =>
-                item.name.toLowerCase().includes(searchValue.toLowerCase())
-              )
               .map(({ name, photos }, index) => (
                 <Collection key={index + name} name={name} images={photos} />
               ))
           : "Loading..."}
       </div>
       <ul className="pagination">
-        {countPage > 0
-          ? [...Array(countPage)].map((_, index) => (
-              <li
-                key={index}
-                onClick={() => setPage(index + 1)}
-                className={index + 1 === page ? "active" : ""}
-              >
-                {index + 1}
-              </li>
-            ))
-          : null}
+        {searchFilterCollection.length && countPage > 1 ? (
+          [...Array(countPage)].map((_, index) => (
+            <li
+              key={index}
+              onClick={() => setPage(index + 1)}
+              className={index + 1 === page ? "active" : ""}
+            >
+              {index + 1}
+            </li>
+          ))
+        ) : (
+          <NotFoundSearch />
+        )}
       </ul>
     </div>
   );
